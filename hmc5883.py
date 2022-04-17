@@ -2,7 +2,7 @@
 import machine
 import utime
 
-class HMC5883L:    
+class REGISTERS:    
     #PRE CONF FOR REGISTER A
     #CRA7(MSB)-CRA0(LSB)
     class REG_A:
@@ -199,10 +199,12 @@ class HMC5883L:
             return self.IRC_ADD
         def get_reg_c_val(self):
             return self.IRC_DEFAULT_VAL
+    def __init__(self,gauss='1.3', declination=(0, 0)):
+        pass
         
 
-    def __init__(self,id=1, scl=15, sda=14, address=30, gauss='1.3', declination=(0, 0),freq=100000):
-        self.i2c_conn = machine.I2C(id=id,sda=machine.Pin(sda),scl=machine.Pin(scl),freq=freq)
+class I2C_DRIVER(REGISTERS):
+    def __init__(self,id=1, scl=15, sda=14, address=30,freq=100000):
         len_of_place_holder=17
         self.reg_A = self.REG_A()
         self.reg_B = self.REG_B()
@@ -229,3 +231,16 @@ class HMC5883L:
             "{:<{}}".format("REGISTER DZA",len_of_place_holder),"=> ","{:>08b}".format(self.reg_Dzab.get_reg_a_add()),"{:3}".format(" "),self.i2c_conn.readfrom_mem(address,self.reg_Dzab.get_reg_a_add(),1,addrsize=8),'\n',\
             "{:<{}}".format("REGISTER DZB",len_of_place_holder),"=> ","{:>08b}".format(self.reg_Dzab.get_reg_b_add()),"{:3}".format(" "),self.i2c_conn.readfrom_mem(address,self.reg_Dzab.get_reg_b_add(),1,addrsize=8),'\n',\
             "{:<{}}".format("REGISTER STATUS",len_of_place_holder),"=> ","{:>08b}".format(self.reg_status.get_reg_add()),"{:3}".format(" "),self.i2c_conn.readfrom_mem(address,self.reg_status.get_reg_add(),1,addrsize=8),'\n') 
+
+    
+    def read_data_regs(self):
+        #TODO
+        pass
+
+    def write_config_mode(self):
+        #TODO
+        pass
+
+    def read_status(self):
+        #TODO
+        pass
