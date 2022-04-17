@@ -1,6 +1,7 @@
 
 import machine
 import utime
+import math
 
 class REGISTERS:    
     #PRE CONF FOR REGISTER A
@@ -72,6 +73,8 @@ class REGISTERS:
             self.CRB_SPECIAL_VAL = self.CRB_DEFAULT_VAL
         def set_reg_val(self, CRB75=GN_CRB75_1GA3[0] ,CRA40=0 << 4):
             self.CRB_SPECIAL_VAL = CRB75[0] | CRA40
+        def get_gain_val(self):
+            return self.GN_CRB75_1GA3[1]
         def get_reg_val(self):
             return self.CRB_SPECIAL_VAL
         def get_reg_add(self):
@@ -164,18 +167,12 @@ class REGISTERS:
         def __init__(self):
             self.SR_ADD = 0x09
             self.SR_DEFAULT_VAL = 0b00000000
-        def is_data_over_written(self,buff):
-            #TODO
-            #return bool(buff & (1<<4))
-            pass
-        def is_data_output_reg_lock(self,buff):
-            #TODO
-            #return bool(buff & (1<<1))
-            pass
-        def is_data_output_reg_rdy(self,buff):
-            #TODO
-            #return bool(buff & 1)
-            pass
+        def is_data_over_written(self):
+            return (1<<4)
+        def is_data_output_reg_lock(self):
+            return (1<<1)
+        def is_data_output_reg_rdy(self):
+            return 1
         def get_reg_add(self):
             return self.SR_ADD
 
@@ -205,6 +202,7 @@ class REGISTERS:
 
 class I2C_DRIVER(REGISTERS):
     def __init__(self,id=1, scl=15, sda=14, address=30,freq=100000):
+        self.address = address
         self.i2c_conn = machine.I2C(id=id,sda=machine.Pin(sda),scl=machine.Pin(scl),freq=freq)
         len_of_place_holder=17
         self.reg_A = self.REG_A()
@@ -235,13 +233,31 @@ class I2C_DRIVER(REGISTERS):
 
     
     def read_data_regs(self):
-        #TODO
-        pass
-
+        if self.read_status():
+            x = (self.i2c_conn.readfrom_mem(self.address,self.reg_Dxab.get_reg_a_add(),1,addrsize=8)[0] << 8) | self.i2c_conn.readfrom_mem(self.address,self.reg_Dxab.get_reg_b_add(),1,addrsize=8)[0]
+            y = (self.i2c_conn.readfrom_mem(self.address,self.reg_Dyab.get_reg_a_add(),1,addrsize=8)[0] << 8) | self.i2c_conn.readfrom_mem(self.address,self.reg_Dyab.get_reg_b_add(),1,addrsize=8)[0]
+            z = (self.i2c_conn.readfrom_mem(self.address,self.reg_Dzab.get_reg_a_add(),1,addrsize=8)[0] << 8) | self.i2c_conn.readfrom_mem(self.address,self.reg_Dzab.get_reg_b_add(),1,addrsize=8)[0]
+        return (x,y,z)
+    
     def write_config_mode(self):
         #TODO
         pass
 
     def read_status(self):
-        #TODO
-        pass
+        status=self.i2c_conn.readfrom_mem(self.address,self.reg_status.get_reg_add(),1,addrsize=8)[0]
+        if status & (self.reg_status.is_data_output_reg_rdy() | self.reg_status.is_data_output_reg_lock()):
+            return 1
+        else:
+            return 0
+        
+    def calculatetoprinthumanreadable(self):
+        (x,y,z) = self.read_data_regs()
+        gain = self.reg_B.get_gain_val()
+        x= x-(1<<16) if x&(1<<15) else x
+        y= y-(1<<16) if y&(1<<15) else y
+        z= z-(1<<16) if z&(1<<15) else z
+        x = round(x*gain,4)
+        y = round(y*gain,4)
+        z = round(z*gain,4)
+        print("X=>",x," Y=>",y,"Z=> ",z)
+        
