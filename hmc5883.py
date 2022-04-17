@@ -205,6 +205,7 @@ class REGISTERS:
 
 class I2C_DRIVER(REGISTERS):
     def __init__(self,id=1, scl=15, sda=14, address=30,freq=100000):
+        self.i2c_conn = machine.I2C(id=id,sda=machine.Pin(sda),scl=machine.Pin(scl),freq=freq)
         len_of_place_holder=17
         self.reg_A = self.REG_A()
         self.reg_B = self.REG_B()
@@ -224,13 +225,13 @@ class I2C_DRIVER(REGISTERS):
             "{:<{}}".format("REGISTER A",len_of_place_holder),"=> ","{:>08b}".format(self.reg_A.get_reg_add()),"{:3}".format(" "),"{:>08b}".format(self.reg_A.get_reg_val()),'\n',\
             "{:<{}}".format("REGISTER B",len_of_place_holder),"=> ","{:>08b}".format(self.reg_B.get_reg_add()),"{:3}".format(" "),"{:>08b}".format(self.reg_A.get_reg_val()),'\n',\
             "{:<{}}".format("REGISTER MODE",len_of_place_holder),"=> ","{:>08b}".format(self.reg_Mode.get_reg_add()),"{:3}".format(" "),"{:>08b}".format(self.reg_Mode.get_reg_val()),'\n',\
-            "{:<{}}".format("REGISTER DXA",len_of_place_holder),"=> ","{:>08b}".format(self.reg_Dxab.get_reg_a_add()),"{:3}".format(" "),self.i2c_conn.readfrom_mem(address,self.reg_Dxab.get_reg_a_add(),1,addrsize=8),'\n',\
-            "{:<{}}".format("REGISTER DXB",len_of_place_holder),"=> ","{:>08b}".format(self.reg_Dxab.get_reg_b_add()),"{:3}".format(" "),self.i2c_conn.readfrom_mem(address,self.reg_Dxab.get_reg_b_add(),1,addrsize=8),'\n',\
-            "{:<{}}".format("REGISTER DYA",len_of_place_holder),"=> ","{:>08b}".format(self.reg_Dyab.get_reg_a_add()),"{:3}".format(" "),self.i2c_conn.readfrom_mem(address,self.reg_Dyab.get_reg_a_add(),1,addrsize=8),'\n',\
-            "{:<{}}".format("REGISTER DYB",len_of_place_holder),"=> ","{:>08b}".format(self.reg_Dyab.get_reg_b_add()),"{:3}".format(" "),self.i2c_conn.readfrom_mem(address,self.reg_Dyab.get_reg_b_add(),1,addrsize=8),'\n',\
-            "{:<{}}".format("REGISTER DZA",len_of_place_holder),"=> ","{:>08b}".format(self.reg_Dzab.get_reg_a_add()),"{:3}".format(" "),self.i2c_conn.readfrom_mem(address,self.reg_Dzab.get_reg_a_add(),1,addrsize=8),'\n',\
-            "{:<{}}".format("REGISTER DZB",len_of_place_holder),"=> ","{:>08b}".format(self.reg_Dzab.get_reg_b_add()),"{:3}".format(" "),self.i2c_conn.readfrom_mem(address,self.reg_Dzab.get_reg_b_add(),1,addrsize=8),'\n',\
-            "{:<{}}".format("REGISTER STATUS",len_of_place_holder),"=> ","{:>08b}".format(self.reg_status.get_reg_add()),"{:3}".format(" "),self.i2c_conn.readfrom_mem(address,self.reg_status.get_reg_add(),1,addrsize=8),'\n') 
+            "{:<{}}".format("REGISTER DXA",len_of_place_holder),"=> ","{:>08b}".format(self.reg_Dxab.get_reg_a_add()),"{:3}".format(" "),"{:>08b}".format(self.i2c_conn.readfrom_mem(address,self.reg_Dxab.get_reg_a_add(),1,addrsize=8)[0]),'\n',\
+            "{:<{}}".format("REGISTER DXB",len_of_place_holder),"=> ","{:>08b}".format(self.reg_Dxab.get_reg_b_add()),"{:3}".format(" "),"{:>08b}".format(self.i2c_conn.readfrom_mem(address,self.reg_Dxab.get_reg_b_add(),1,addrsize=8)[0]),'\n',\
+            "{:<{}}".format("REGISTER DYA",len_of_place_holder),"=> ","{:>08b}".format(self.reg_Dyab.get_reg_a_add()),"{:3}".format(" "),"{:>08b}".format(self.i2c_conn.readfrom_mem(address,self.reg_Dyab.get_reg_a_add(),1,addrsize=8)[0]),'\n',\
+            "{:<{}}".format("REGISTER DYB",len_of_place_holder),"=> ","{:>08b}".format(self.reg_Dyab.get_reg_b_add()),"{:3}".format(" "),"{:>08b}".format(self.i2c_conn.readfrom_mem(address,self.reg_Dyab.get_reg_b_add(),1,addrsize=8)[0]),'\n',\
+            "{:<{}}".format("REGISTER DZA",len_of_place_holder),"=> ","{:>08b}".format(self.reg_Dzab.get_reg_a_add()),"{:3}".format(" "),"{:>08b}".format(self.i2c_conn.readfrom_mem(address,self.reg_Dzab.get_reg_a_add(),1,addrsize=8)[0]),'\n',\
+            "{:<{}}".format("REGISTER DZB",len_of_place_holder),"=> ","{:>08b}".format(self.reg_Dzab.get_reg_b_add()),"{:3}".format(" "),"{:>08b}".format(self.i2c_conn.readfrom_mem(address,self.reg_Dzab.get_reg_b_add(),1,addrsize=8)[0]),'\n',\
+            "{:<{}}".format("REGISTER STATUS",len_of_place_holder),"=> ","{:>08b}".format(self.reg_status.get_reg_add()),"{:3}".format(" "),"{:>08b}".format(self.i2c_conn.readfrom_mem(address,self.reg_status.get_reg_add(),1,addrsize=8)[0]),'\n') 
 
     
     def read_data_regs(self):
